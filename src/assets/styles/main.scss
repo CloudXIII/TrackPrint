@@ -1,0 +1,94 @@
+// Token variables are injected globally via vite.config additionalData.
+// This file only handles global styles and resets.
+@use 'reset';
+@use 'controls';
+@use 'dark-theme';
+
+:root,
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
+body {
+  font-family: $font-sans;
+  font-size: $font-size-base;
+  color: $gray-900;
+  background-color: $gray-100;
+}
+
+// ── Utility ──────────────────────────────────
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// ── Card ─────────────────────────────────────
+.card {
+  background: $white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+}
+
+// ── Form controls ────────────────────────────
+.input {
+  width: 100%;
+  padding: $space-3 $space-4;
+  border: $border-control solid $green-100;
+  border-radius: $radius-md;
+  font-family: $font-sans;
+  font-size: $text-md;
+  color: $gray-900;
+  background: $white;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+  outline: none;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+
+  &:focus {
+    border-color: $green-500;
+    box-shadow: $focus-ring;
+  }
+}
+
+// ── Scrollbar ────────────────────────────────
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: $green-300;
+  border-radius: $radius-pill;
+}
+
+// ── Vue transitions ──────────────────────────
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity $transition-normal;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: opacity $transition-slow, transform $transition-slow;
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}

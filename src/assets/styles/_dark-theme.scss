@@ -1,0 +1,267 @@
+@use 'tokens' as *;
+
+// Dark theme overrides — applied via html[data-theme="dark"]
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  body {
+    background-color: #0f1512;
+    color: #e4ebe6;
+  }
+
+  .app {
+    background: #0f1512;
+  }
+
+  .app-footer {
+    color: #6b8578;
+    border-top-color: rgba($green-300, 0.12);
+
+    a {
+      color: $green-300;
+
+      &:hover { color: $green-300; }
+    }
+  }
+
+  .input {
+    background: #1a2420;
+    border-color: rgba($green-300, 0.18);
+    color: #e4ebe6;
+
+    &::placeholder {
+      color: #6b8578;
+    }
+
+    &:focus {
+      border-color: $green-500;
+      box-shadow: 0 0 0 3px rgba($green-500, 0.2);
+    }
+  }
+
+  .trip-form,
+  .results-panel-shell,
+  .route-map-shell {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba($green-300, 0.08);
+  }
+
+  .trip-form,
+  .results-panel {
+    background: #1a2420;
+  }
+
+  .trip-form__header {
+    background: rgba($green-500, 0.15);
+    border-bottom-color: rgba($green-300, 0.12);
+  }
+
+  .trip-form__title,
+  .results-panel__title {
+    color: #e4ebe6;
+  }
+
+  .trip-form__header-left {
+    color: $green-300;
+  }
+
+  .trip-form__edit-btn {
+    background: #243028;
+    border-color: rgba($green-300, 0.35);
+    color: $green-300;
+
+    &:hover {
+      background: #2a3a32;
+    }
+  }
+
+  .summary-row {
+    background: rgba($green-900, 0.55);
+    border-top-color: rgba($green-300, 0.12);
+    color: #8fa89a;
+
+    &__loc {
+      color: #e4ebe6;
+    }
+  }
+
+  .location-field__label,
+  .form-label {
+    color: #8fa89a;
+  }
+
+  .location-field__option {
+    color: #e4ebe6;
+
+    &:hover {
+      background: rgba($green-500, 0.12);
+    }
+  }
+
+  .location-field__dropdown {
+    background: #243028;
+    border-color: rgba($green-300, 0.18);
+  }
+
+  .swap-btn {
+    background: #243028;
+    border-color: rgba($green-300, 0.18);
+    color: $green-300;
+
+    &:hover {
+      background: #2a3a32;
+      border-color: rgba($green-300, 0.35);
+    }
+  }
+
+  .price-field {
+    background: #243028;
+    border-color: rgba($green-300, 0.25);
+
+    &__symbol {
+      background: rgba($green-900, 0.65);
+      border-right-color: rgba($green-300, 0.18);
+      color: $green-300;
+    }
+
+    &__input {
+      color: #e4ebe6;
+    }
+  }
+
+  .unit-chips__prefix {
+    color: #6b8578;
+  }
+
+  .segmented-control {
+    border-color: rgba($green-300, 0.18);
+  }
+
+  .segmented-control__option {
+    color: #8fa89a;
+
+    &:hover:not(.segmented-control__option--active) {
+      background: rgba($green-500, 0.1);
+      color: $green-300;
+    }
+
+    &--active {
+      background: $green-500;
+      color: $white;
+      box-shadow: $shadow-segment-active;
+    }
+
+    &--accent.segmented-control__option--active {
+      background: $green-700;
+    }
+  }
+
+  .info-bar,
+  .callout-panel {
+    background: rgba($green-900, 0.55);
+    border-color: rgba($green-300, 0.18);
+    color: $green-300;
+  }
+
+  .chip {
+    background: rgba($green-900, 0.55);
+    border-color: rgba($green-300, 0.18);
+    color: $green-300;
+  }
+
+  .battery-range {
+    &__label {
+      color: #8fa89a;
+    }
+
+    &__value {
+      color: $green-300;
+    }
+
+    &__input {
+      background: rgba($green-300, 0.15);
+
+      &::-webkit-slider-thumb {
+        border-color: #1a2420;
+      }
+
+      &::-moz-range-thumb {
+        border-color: #1a2420;
+      }
+    }
+
+    &__ticks {
+      color: #6b8578;
+    }
+  }
+
+  .stat-tile {
+    background: #243028;
+    border-color: rgba($green-300, 0.18);
+
+    &--accent {
+      background: rgba($green-900, 0.65);
+      border-color: rgba($green-300, 0.28);
+    }
+
+    &__icon {
+      background: rgba($green-500, 0.18);
+      color: $green-300;
+
+      .stat-tile--accent & {
+        background: rgba($green-300, 0.22);
+        color: $green-300;
+      }
+    }
+
+    &__value {
+      color: #e4ebe6;
+    }
+
+    &__unit,
+    &__label {
+      color: #8fa89a;
+    }
+  }
+
+  .export-card {
+    background: #243028;
+    border-color: rgba($green-300, 0.18);
+
+    &__icon {
+      background: rgba($green-500, 0.18);
+      color: $green-300;
+    }
+
+    &__text {
+      color: #8fa89a;
+    }
+  }
+
+  .results-panel__section {
+    border-top-color: rgba($green-300, 0.12);
+  }
+
+  .results-panel__section-title {
+    color: #8fa89a;
+  }
+
+  .route-map-shell {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba($green-300, 0.08);
+  }
+
+  .route-map {
+    background: #1a2420;
+
+    &__hint {
+      background: rgba(#243028, 0.92);
+
+      span {
+        color: #8fa89a;
+      }
+    }
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba($green-300, 0.35);
+  }
+}

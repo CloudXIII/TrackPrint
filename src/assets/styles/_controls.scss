@@ -1,0 +1,115 @@
+@use 'tokens' as *;
+
+// ── Shared form label ────────────────────────────────────────
+.form-label {
+  font-size: $text-sm;
+  font-weight: 500;
+  color: $gray-600;
+  flex-shrink: 0;
+}
+
+// ── Segmented control (vehicle type, fuel type, …) ───────────
+.segmented-control {
+  display: flex;
+  gap: $segment-gap;
+  padding: $space-1;
+  border: $border-control solid $green-100;
+  border-radius: $radius-md;
+  width: 100%;
+
+  &__option {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: $space-2 $space-1;
+    border: none;
+    border-radius: $radius-md;
+    background: transparent;
+    color: $gray-600;
+    font-size: $text-xs;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+      background $transition-fast,
+      color        $transition-fast,
+      box-shadow   $transition-fast;
+
+    &:hover:not(&--active) {
+      background: $green-50;
+      color: $green-700;
+    }
+
+    &--active {
+      background: $green-500;
+      color: $white;
+      box-shadow: $shadow-segment-active;
+    }
+
+    &--accent#{&}--active {
+      background: $green-700;
+    }
+  }
+
+  &__icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+}
+
+// ── Compact info strip ───────────────────────────────────────
+.info-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-1;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  background: $color-info-bg;
+  color: $color-info-text;
+  font-size: $text-sm;
+  font-weight: 500;
+  border: $border-control solid $green-100;
+
+  &__sep {
+    opacity: 0.45;
+  }
+
+  &__mono {
+    font-family: $font-mono;
+    font-weight: 600;
+  }
+}
+
+// ── Bordered callout panel ───────────────────────────────────
+.callout-panel {
+  width: 100%;
+  padding: $space-3 $space-4;
+  background: $color-info-bg;
+  border: $border-control solid $green-100;
+  border-radius: $radius-lg;
+}
+
+// ── Inline chips (unit badges) ───────────────────────────────
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1 $space-3;
+  background: $color-info-bg;
+  border: $border-control solid $green-100;
+  border-radius: $radius-pill;
+  font-size: $text-sm;
+  font-weight: 500;
+  color: $color-info-text;
+  font-family: $font-mono;
+
+  .ti {
+    font-size: $text-sm;
+  }
+}

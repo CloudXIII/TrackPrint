@@ -2,6 +2,7 @@
 // This file only handles global styles and resets.
 @use 'reset';
 @use 'controls';
+@use 'route-map';
 @use 'dark-theme';
 
 :root,
@@ -106,4 +107,43 @@ body {
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(12px);
+}
+
+// TripForm collapse — edit button and summary row
+.form-fade-enter-active {
+  transition: opacity $transition-normal;
+
+  @media (max-width: $bp-tablet) {
+    transition: opacity $transition-form-collapse;
+  }
+}
+
+.form-fade-leave-active {
+  transition: opacity $transition-normal;
+
+  @media (max-width: $bp-tablet) {
+    transition: none;
+  }
+}
+
+.form-fade-enter-from,
+.form-fade-leave-to {
+  opacity: 0;
+}
+
+.summary-fade-enter-active {
+  transition: opacity $duration-summary-fade-enter ease $duration-summary-fade-delay;
+}
+
+.summary-fade-leave-active {
+  transition: opacity $duration-summary-fade-leave ease;
+
+  @media (max-width: $bp-tablet) {
+    transition: none;
+  }
+}
+
+.summary-fade-enter-from,
+.summary-fade-leave-to {
+  opacity: 0;
 }

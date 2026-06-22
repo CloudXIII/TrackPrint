@@ -1,8 +1,8 @@
 import { nextTick } from 'vue'
 import { PDF_CAPTURE_SCALE, PDF_JPEG_QUALITY } from '@/constants/index.ts'
-import { useTripState } from '@/composables/useTripState.ts'
+import { useTripState } from '@/composables/trip/useTripState.ts'
 import { useUnitPreferences } from '@/composables/useUnitPreferences.ts'
-import { useTripStats } from '@/composables/useTripStats.ts'
+import { useTripStats } from '@/composables/trip/useTripStats.ts'
 import { getVehicleLabel } from '@/config/vehicles.ts'
 import {
   buildPdfTemplate,

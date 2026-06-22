@@ -1,0 +1,193 @@
+@use 'tokens' as *;
+
+// Shared left-column / mobile-content flex behaviour (form + results split).
+@mixin layout-column {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  min-width: 0;
+  min-height: 0;
+
+  &:not(.layout-column--split) .trip-form {
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+  }
+
+  &--split {
+    .trip-form {
+      flex-shrink: 0;
+    }
+
+    .layout__results {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+// App shell — imported from App.vue
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $gray-100;
+
+  @media (max-width: $bp-tablet) {
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
+.layout {
+  flex: 1;
+  max-width: $layout-max-width;
+  width: 100%;
+  margin: 0 auto;
+  padding: $space-6;
+
+  @media (max-width: $bp-tablet) {
+    max-width: none;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  &__panels {
+    display: grid;
+    gap: $space-5;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "left"
+      "map";
+
+    @media (min-width: $bp-tablet) {
+      grid-template-columns: $panel-col-width-tablet 1fr;
+      grid-template-areas: "left map";
+      align-items: stretch;
+    }
+
+    @media (min-width: $bp-desktop) {
+      grid-template-columns: $panel-col-width-desktop 1fr;
+    }
+
+    &--fixed {
+      @media (min-width: $bp-tablet) {
+        height: var(--panel-height);
+        min-height: var(--panel-height);
+        max-height: var(--panel-height);
+      }
+    }
+  }
+
+  &__left {
+    grid-area: left;
+    @include layout-column;
+
+    .layout__panels--fixed & {
+      @media (min-width: $bp-tablet) {
+        height: 100%;
+      }
+    }
+  }
+
+  &__map {
+    grid-area: map;
+    height: $map-panel-min-height;
+    min-height: $map-panel-min-height;
+
+    .layout__panels--fixed & {
+      @media (min-width: $bp-tablet) {
+        height: 100%;
+        min-height: 0;
+      }
+    }
+  }
+}
+
+.layout-mobile {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+
+  &__content {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    padding: $space-3;
+    padding-bottom: $space-2;
+    transition:
+      gap $transition-form-collapse,
+      padding $transition-form-collapse;
+    @include layout-column;
+
+    &.layout-column--split {
+      gap: $space-2;
+      padding: $space-2;
+      padding-bottom: $space-1;
+
+      .trip-form {
+        flex: 0 0 auto;
+        flex-shrink: 0;
+        height: auto;
+        max-height: none;
+
+        &.trip-form--layout-returning {
+          flex: 1 1 auto;
+          min-height: 0;
+          max-height: 100%;
+        }
+      }
+    }
+  }
+}
+
+.results-reveal-enter-active {
+  transition: $transition-results-enter;
+
+  @media (max-width: $bp-tablet) {
+    transition-duration: $duration-form-collapse;
+    transition-delay: 0ms;
+  }
+
+  @media (min-width: $bp-tablet) {
+    transition-delay: $duration-results-enter-delay-desktop;
+  }
+}
+
+.results-reveal-leave-active {
+  transition: $transition-results-leave;
+
+  @media (max-width: $bp-tablet) {
+    transition: none;
+  }
+}
+
+.results-reveal-enter-from,
+.results-reveal-leave-to {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.app-footer {
+  padding: $space-5 $space-6;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: $gray-400;
+  border-top: 1px solid rgba($green-100, 0.8);
+
+  @media (max-width: $bp-tablet) {
+    display: none;
+  }
+
+  a {
+    color: $green-500;
+    &:hover { text-decoration: underline; }
+  }
+}

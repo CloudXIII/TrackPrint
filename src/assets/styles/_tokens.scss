@@ -54,7 +54,7 @@ $radius-lg:   12px;
 $radius-xl:   16px;
 $radius-pill: 999px;
 
-// Breakpoints
+// Breakpoints (TABLET_BREAKPOINT_PX / DESKTOP_BREAKPOINT in constants/layout.ts)
 $bp-mobile:  480px;
 $bp-tablet:  768px;
 $bp-desktop: 1024px;
@@ -72,10 +72,36 @@ $segment-gap: 2px;
 $focus-ring: 0 0 0 3px rgba($green-500, 0.15);
 $control-size-sm: 36px;
 
-// Transitions
+// Transitions (durations mirrored in constants/animation.ts)
+$ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+$duration-form-collapse:              420ms;
+$duration-sheet-default:              280ms;
+$duration-results-enter:              400ms;
+$duration-results-leave:              280ms;
+$duration-results-enter-delay-desktop: 350ms;
+$duration-form-fade:                  250ms;
+$duration-summary-fade-enter:         300ms;
+$duration-summary-fade-leave:         200ms;
+$duration-summary-fade-delay:         250ms;
+
 $transition-fast:   150ms ease;
-$transition-normal: 250ms ease;
-$transition-slow:   400ms ease;
+$transition-normal: $duration-form-fade ease;
+$transition-slow:   $duration-results-enter ease;
+
+$transition-form-collapse: $duration-form-collapse $ease-standard;
+$transition-sheet-default: $duration-sheet-default $ease-standard;
+$transition-results-enter: opacity $duration-results-enter $ease-standard,
+                          transform $duration-results-enter $ease-standard;
+$transition-results-leave: opacity $duration-results-leave $ease-standard,
+                          transform $duration-results-leave $ease-standard;
+
+// Layout dimensions (mirrored in constants/layout.ts)
+$layout-max-width:           1160px;
+$panel-col-width-tablet:      500px;
+$panel-col-width-desktop:     520px;
+$map-panel-min-height:        240px;
+$form-body-max-height:        960px;
 
 // Layout — reserved plugin slider slot (keeps form + map height stable)
 $plugin-slot-height: 118px;

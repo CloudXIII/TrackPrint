@@ -1,3 +1,32 @@
+export {
+  MOBILE_FORM_COLLAPSE_MS,
+  MOBILE_MAP_SHEET_ENTRANCE_MS,
+  MOBILE_SHEET_DEFAULT_TRANSITION_MS,
+  RESULTS_REVEAL_ENTER_MS,
+  RESULTS_REVEAL_LEAVE_MS,
+  RESULTS_REVEAL_ENTER_DELAY_DESKTOP_MS,
+  FORM_FADE_MS,
+  SUMMARY_FADE_ENTER_MS,
+  SUMMARY_FADE_LEAVE_MS,
+  SUMMARY_FADE_DELAY_MS,
+} from '@/constants/animation.ts'
+
+export {
+  TABLET_BREAKPOINT_PX,
+  DESKTOP_BREAKPOINT,
+  LAYOUT_MAX_WIDTH_PX,
+  PANEL_COL_WIDTH_TABLET_PX,
+  PANEL_COL_WIDTH_DESKTOP_PX,
+  MAP_PANEL_MIN_HEIGHT_PX,
+  FORM_BODY_MAX_HEIGHT_PX,
+  MOBILE_MAP_SHEET_PEEK,
+  MOBILE_MAP_SHEET_FULL,
+  MOBILE_MAP_SHEET_PEEK_RESULTS_PX,
+  MOBILE_MAP_SHEET_MIN_HEIGHT_PX,
+  MOBILE_SHEET_TAP_THRESHOLD_PX,
+  MOBILE_MAP_SHEET_CONTEXT_KEY,
+} from '@/constants/layout.ts'
+
 // ── Storage ─────────────────────────────────────────────────────────────────
 export const THEME_STORAGE_KEY = 'trackprint-theme'
 
@@ -22,26 +51,6 @@ export const GEOCODING_BLUR_DELAY_MS = 160
 export const GEOCODING_MIN_QUERY_LENGTH = 2
 export const GEOCODING_SUGGESTION_LIMIT = 5
 export const REVERSE_SEARCH_RADIUS_M = 100
-
-// ── Layout ──────────────────────────────────────────────────────────────────
-export const DESKTOP_BREAKPOINT = '(min-width: 768px)'
-
-/** Mobile map sheet snap heights (fraction of the shell below the header). */
-export const MOBILE_MAP_SHEET_PEEK = 0.08
-export const MOBILE_MAP_SHEET_FULL = 0.90
-/** Handle + a visible blurred map strip when results are shown. */
-export const MOBILE_MAP_SHEET_PEEK_RESULTS_PX = 68
-export const MOBILE_MAP_SHEET_MIN_HEIGHT_PX = 44
-/** Pointer movement below this (px) counts as a tap, not a drag. */
-export const MOBILE_SHEET_TAP_THRESHOLD_PX = 8
-
-/** Mobile results phase — form collapse and map sheet entrance share this duration. */
-export const MOBILE_FORM_COLLAPSE_MS = 420
-/** Map sheet height reveal — synced with form collapse easing. */
-export const MOBILE_MAP_SHEET_ENTRANCE_MS = MOBILE_FORM_COLLAPSE_MS
-
-/** Inject key — bottom sheet signals when its entrance height animation has settled (map refit). */
-export const MOBILE_MAP_SHEET_LAYOUT_READY_KEY = Symbol('mobileMapSheetLayoutReady')
 
 // ── Fuel identifiers & units ────────────────────────────────────────────────
 export const FUEL_ID_PLUGIN = 'plugin'

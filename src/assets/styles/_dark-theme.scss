@@ -65,9 +65,8 @@ html[data-theme='dark'] {
     background: #1a2420;
   }
 
-  .trip-form__actions {
+  .trip-form__footer {
     background: transparent;
-    border-top-color: rgba($green-300, 0.12);
   }
 
   .market-toggle__btn--active {
@@ -195,14 +194,6 @@ html[data-theme='dark'] {
   }
 
   .battery-range {
-    &__label {
-      color: #8fa89a;
-    }
-
-    &__value {
-      color: $green-300;
-    }
-
     &__input {
       background: rgba($green-300, 0.15);
 

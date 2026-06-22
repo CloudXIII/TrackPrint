@@ -57,7 +57,8 @@
   }
 
   &__icon {
-    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
     line-height: 1;
   }
 }
@@ -109,7 +110,8 @@
   color: $color-info-text;
   font-family: $font-mono;
 
-  .ti {
-    font-size: $text-sm;
+  .tabler-icon {
+    width: $text-sm;
+    height: $text-sm;
   }
 }

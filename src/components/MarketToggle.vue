@@ -1,9 +1,7 @@
-<script setup>
-import { storeToRefs } from 'pinia'
-import { useUiStore } from '@/stores/uiStore.js'
+<script setup lang="ts">
+import { useUnitPreferences } from '@/composables/useUnitPreferences.ts'
 
-const uiStore = useUiStore()
-const { market } = storeToRefs(uiStore)
+const { market, setMarket } = useUnitPreferences()
 </script>
 
 <template>
@@ -12,7 +10,7 @@ const { market } = storeToRefs(uiStore)
       class="market-toggle__btn"
       :class="{ 'market-toggle__btn--active': market === 'uk' }"
       type="button"
-      @click="uiStore.setMarket('uk')"
+      @click="setMarket('uk')"
       :aria-pressed="market === 'uk'"
     >
       UK
@@ -21,7 +19,7 @@ const { market } = storeToRefs(uiStore)
       class="market-toggle__btn"
       :class="{ 'market-toggle__btn--active': market === 'eu' }"
       type="button"
-      @click="uiStore.setMarket('eu')"
+      @click="setMarket('eu')"
       :aria-pressed="market === 'eu'"
     >
       EU

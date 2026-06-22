@@ -1,9 +1,56 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import { NOMINATIM_USER_AGENT } from './src/appMeta.ts'
+
+const googleRoutesProxy = {
+  target: 'https://routes.googleapis.com',
+  changeOrigin: true,
+  rewrite: (path) => path.replace(/^\/api\/google-routes/, ''),
+}
+
+const googlePlacesProxy = {
+  target: 'https://places.googleapis.com',
+  changeOrigin: true,
+  rewrite: (path) => path.replace(/^\/api\/google-places/, ''),
+}
+
+const googleStaticProxy = {
+  target: 'https://maps.googleapis.com',
+  changeOrigin: true,
+  rewrite: (path) => path.replace(/^\/api\/google-static/, '/maps/api/staticmap'),
+}
+
+const nominatimProxy = {
+  target: 'https://nominatim.openstreetmap.org',
+  changeOrigin: true,
+  rewrite: (path) => path.replace(/^\/api\/nominatim/, ''),
+  configure: (proxy) => {
+    proxy.on('proxyReq', (proxyReq) => {
+      proxyReq.setHeader('User-Agent', NOMINATIM_USER_AGENT)
+    })
+  },
+}
 
 export default defineConfig({
   plugins: [vue()],
+  server: {
+    proxy: {
+      '/api/google-routes': googleRoutesProxy,
+      '/api/google-places': googlePlacesProxy,
+      '/api/google-static': googleStaticProxy,
+      '/api/nominatim': nominatimProxy,
+    },
+  },
+  preview: {
+    proxy: {
+      '/api/google-routes': googleRoutesProxy,
+      '/api/google-places': googlePlacesProxy,
+      '/api/google-static': googleStaticProxy,
+      '/api/nominatim': nominatimProxy,
+    },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -12,11 +59,13 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        // Injects token variables into every SCSS file / <style lang="scss"> block.
-        // _tokens.scss itself must not @use/@import anything.
         api: 'modern',
         additionalData: '@use "@/assets/styles/tokens" as *;\n',
       },
     },
+  },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
   },
 })

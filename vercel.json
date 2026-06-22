@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/google-routes/:path*",
+      "destination": "https://routes.googleapis.com/:path*"
+    },
+    {
+      "source": "/api/google-places/:path*",
+      "destination": "https://places.googleapis.com/:path*"
+    },
+    {
+      "source": "/api/google-static",
+      "destination": "https://maps.googleapis.com/maps/api/staticmap"
+    }
+  ]
+}

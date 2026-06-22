@@ -7,6 +7,21 @@
 :root,
 html[data-theme='light'] {
   color-scheme: light;
+
+  --surface-card: #{$white};
+  --surface-raised: #{$white};
+  --surface-accent: #{$green-50};
+  --surface-sheet-handle: linear-gradient(180deg, #{$green-50} 0%, #{$gray-100} 100%);
+  --surface-sheet-handle-overlay: linear-gradient(
+    180deg,
+    rgba($white, 0.94) 0%,
+    rgba($white, 0.82) 55%,
+    rgba($white, 0.45) 100%
+  );
+  --border-subtle: #{$green-100};
+  --text-primary: #{$gray-900};
+  --text-secondary: #{$gray-600};
+  --text-brand: #{$green-700};
 }
 
 body {

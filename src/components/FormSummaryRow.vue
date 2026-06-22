@@ -1,34 +1,35 @@
-<script setup>
-import { getVehicleLabel } from '@/config/vehicles.js'
+<script setup lang="ts">
+import { getVehicleLabel } from '@/config/vehicles.ts'
+import { getShortLocationLabel } from '@/utils/locationLabel.ts'
+import { useUnitPreferences } from '@/composables/useUnitPreferences.ts'
+import TablerIcon from '@/components/TablerIcon.vue'
+import type { FuelType, GeoLocation, VehicleProfile } from '@/types/index.ts'
 
-defineProps({
-  from:    { type: Object, default: null },
-  to:      { type: Object, default: null },
-  vehicle: { type: Object, default: null },
-  fuel:    { type: Object, default: null },
-})
+defineProps<{
+  from?: GeoLocation | null
+  to?: GeoLocation | null
+  vehicle?: VehicleProfile | null
+  fuel?: FuelType | null
+}>()
 
-function shortLabel(location) {
-  if (!location) return '—'
-  return location.label.split(',')[0].trim()
-}
+const { market } = useUnitPreferences()
 </script>
 
 <template>
   <div class="summary-row">
     <span class="summary-row__loc">
-      <i class="ti ti-map-pin" aria-hidden="true" />
-      {{ shortLabel(from) }}
+      <TablerIcon name="map-pin" :size="14" />
+      {{ getShortLocationLabel(from) }}
     </span>
-    <i class="ti ti-arrow-right summary-row__arrow" aria-hidden="true" />
+    <TablerIcon name="arrow-right" :size="14" class="summary-row__arrow" />
     <span class="summary-row__loc summary-row__loc--dest">
-      <i class="ti ti-flag" aria-hidden="true" />
-      {{ shortLabel(to) }}
+      <TablerIcon name="flag" :size="14" />
+      {{ getShortLocationLabel(to) }}
     </span>
     <span class="summary-row__sep" aria-hidden="true">·</span>
     <span class="summary-row__meta" v-if="vehicle">
-      <i :class="['ti', vehicle.icon]" aria-hidden="true" />
-      {{ getVehicleLabel(vehicle) }}
+      <TablerIcon :name="vehicle.icon ?? 'car'" :size="14" />
+      {{ getVehicleLabel(vehicle, market) }}
     </span>
     <span class="summary-row__sep" aria-hidden="true">·</span>
     <span class="summary-row__meta" v-if="fuel">{{ fuel.label }}</span>
@@ -54,19 +55,17 @@ function shortLabel(location) {
     font-weight: 500;
     color: $gray-900;
 
-    .ti {
+    .tabler-icon {
       color: $green-500;
-      font-size: 0.875rem;
     }
 
-    &--dest .ti {
+    &--dest .tabler-icon {
       color: $green-700;
     }
   }
 
   &__arrow {
     color: $green-500;
-    font-size: 0.875rem;
   }
 
   &__sep {
@@ -78,8 +77,6 @@ function shortLabel(location) {
     display: inline-flex;
     align-items: center;
     gap: $space-1;
-
-    .ti { font-size: 0.875rem; }
   }
 }
 </style>

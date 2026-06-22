@@ -4,6 +4,21 @@
 html[data-theme='dark'] {
   color-scheme: dark;
 
+  --surface-card: #1a2420;
+  --surface-raised: #243028;
+  --surface-accent: rgba(26, 61, 43, 0.65);
+  --surface-sheet-handle: linear-gradient(180deg, rgba(64, 145, 108, 0.14) 0%, #243028 100%);
+  --surface-sheet-handle-overlay: linear-gradient(
+    180deg,
+    rgba(#1a2420, 0.92) 0%,
+    rgba(#1a2420, 0.78) 55%,
+    rgba(#1a2420, 0.35) 100%
+  );
+  --border-subtle: rgba(116, 198, 157, 0.18);
+  --text-primary: #e4ebe6;
+  --text-secondary: #8fa89a;
+  --text-brand: #{$green-300};
+
   body {
     background-color: #0f1512;
     color: #e4ebe6;
@@ -48,6 +63,17 @@ html[data-theme='dark'] {
   .trip-form,
   .results-panel {
     background: #1a2420;
+  }
+
+  .trip-form__actions {
+    background: transparent;
+    border-top-color: rgba($green-300, 0.12);
+  }
+
+  .market-toggle__btn--active {
+    background: $green-100;
+    color: $green-900;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
   }
 
   .trip-form__header {

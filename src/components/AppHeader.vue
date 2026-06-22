@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import MarketToggle from '@/components/MarketToggle.vue'
 import ThemeToggle  from '@/components/ThemeToggle.vue'
 </script>

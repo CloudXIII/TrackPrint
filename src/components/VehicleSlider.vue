@@ -1,26 +1,30 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { VEHICLES, getVehicleLabel } from '@/config/vehicles.js'
-import { useUnits } from '@/composables/useUnits.js'
+import { VEHICLES, getVehicleLabel } from '@/config/vehicles.ts'
+import { useUnitPreferences } from '@/composables/useUnitPreferences.ts'
+import TablerIcon from '@/components/TablerIcon.vue'
+import type { FuelType, VehicleProfile } from '@/types/index.ts'
 
-const props = defineProps({
-  modelValue: { type: Object, default: null },
-  fuel:       { type: Object, default: null },
-})
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps<{
+  modelValue?: VehicleProfile | null
+  fuel?: FuelType | null
+}>()
+const emit = defineEmits<{
+  'update:modelValue': [value: VehicleProfile]
+}>()
 
-const { formatVehicleConsumption } = useUnits()
+const { formatVehicleConsumption, market } = useUnitPreferences()
 
-function select(vehicle) {
+function select(vehicle: VehicleProfile) {
   emit('update:modelValue', vehicle)
 }
 
-function consumptionFor(vehicle) {
-  return formatVehicleConsumption(vehicle, props.fuel)
+function consumptionFor(vehicle: VehicleProfile) {
+  return formatVehicleConsumption(vehicle, props.fuel ?? null)
 }
 
 const selectedConsumption = computed(() =>
-  consumptionFor(props.modelValue)
+  props.modelValue ? consumptionFor(props.modelValue) : { value: '—', label: '', suffix: '' },
 )
 </script>
 
@@ -36,16 +40,16 @@ const selectedConsumption = computed(() =>
         :aria-checked="modelValue?.id === v.id"
         @click="select(v)"
       >
-        <i :class="['ti', v.icon, 'segmented-control__icon']" aria-hidden="true" />
-        <span>{{ getVehicleLabel(v) }}</span>
+        <TablerIcon :name="v.icon ?? 'car'" :size="16" class="segmented-control__icon" />
+        <span>{{ getVehicleLabel(v, market) }}</span>
       </button>
     </div>
 
     <div v-if="modelValue" class="info-bar" aria-live="polite">
-      <span>{{ getVehicleLabel(modelValue) }}</span>
+      <span>{{ getVehicleLabel(modelValue, market) }}</span>
       <span class="info-bar__sep" aria-hidden="true">·</span>
       <span class="info-bar__mono">
-        {{ selectedConsumption.value }} {{ selectedConsumption.suffix }}
+        Est. {{ selectedConsumption.value }} {{ selectedConsumption.suffix }}
       </span>
     </div>
   </div>

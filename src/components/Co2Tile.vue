@@ -1,15 +1,19 @@
-<script setup>
+<script setup lang="ts">
+import { CO2_EQUIVALENT_ROTATION_MS } from '@/constants/index.ts'
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import TablerIcon from '@/components/TablerIcon.vue'
+import type { Co2Equivalent } from '@/types/index.ts'
 
-const props = defineProps({
-  co2Kg:         { type: Number, required: true },
-  equivalents:   { type: Array,  required: true },
-  showGridNote:  { type: Boolean, default: false },
-  compact:       { type: Boolean, default: false },
-})
+const props = defineProps<{
+  co2Kg: number
+  equivalents: Co2Equivalent[]
+  showGridNote?: boolean
+  compact?: boolean
+}>()
 
 const activeIndex = ref(0)
-let intervalId = null
+const isPaused = ref(false)
+let intervalId: ReturnType<typeof setInterval> | null = null
 
 const activeEquiv = computed(() => props.equivalents[activeIndex.value] ?? null)
 
@@ -17,18 +21,32 @@ function next() {
   activeIndex.value = (activeIndex.value + 1) % props.equivalents.length
 }
 
-function goTo(i) {
+function startInterval() {
+  if (intervalId != null) clearInterval(intervalId)
+  intervalId = setInterval(next, CO2_EQUIVALENT_ROTATION_MS)
+}
+
+function stopInterval() {
+  if (intervalId != null) clearInterval(intervalId)
+  intervalId = null
+}
+
+function goTo(i: number) {
   activeIndex.value = i
-  restartInterval()
+  if (!isPaused.value) startInterval()
 }
 
-function restartInterval() {
-  clearInterval(intervalId)
-  intervalId = setInterval(next, 3500)
+function togglePause() {
+  isPaused.value = !isPaused.value
+  if (isPaused.value) {
+    stopInterval()
+  } else {
+    startInterval()
+  }
 }
 
-onMounted(() => { intervalId = setInterval(next, 3500) })
-onBeforeUnmount(() => clearInterval(intervalId))
+onMounted(startInterval)
+onBeforeUnmount(stopInterval)
 </script>
 
 <template>
@@ -36,7 +54,7 @@ onBeforeUnmount(() => clearInterval(intervalId))
     <div class="co2-tile__main">
       <div class="co2-tile__metric">
         <div class="co2-tile__icon-wrap">
-          <i class="ti ti-leaf" aria-hidden="true" />
+          <TablerIcon name="leaf" :size="20" />
         </div>
         <div class="co2-tile__headline-wrap">
           <div class="co2-tile__headline">
@@ -47,10 +65,11 @@ onBeforeUnmount(() => clearInterval(intervalId))
       </div>
 
       <div class="co2-tile__equiv" v-if="activeEquiv">
+        <p class="co2-tile__equiv-heading">Everyday comparison</p>
         <Transition name="equiv-fade" mode="out-in">
           <div class="co2-tile__equiv-inner" :key="activeEquiv.id">
             <div class="co2-tile__equiv-icon">
-              <i :class="['ti', activeEquiv.icon]" aria-hidden="true" />
+              <TablerIcon :name="activeEquiv.icon" :size="16" />
             </div>
             <div class="co2-tile__equiv-text">
               <strong class="co2-tile__equiv-value">
@@ -65,22 +84,37 @@ onBeforeUnmount(() => clearInterval(intervalId))
     </div>
 
     <p v-if="showGridNote" class="co2-tile__note">
-      <i class="ti ti-info-circle" aria-hidden="true" />
+      <TablerIcon name="info-circle" :size="13" />
       Zero tailpipe emissions, but charging still draws grid electricity — this is a
       well-to-wheel CO₂ estimate, not zero overall.
     </p>
 
-    <div class="co2-tile__dots" role="tablist" aria-label="CO₂ equivalents">
+    <p class="co2-tile__estimate-note">
+      CO₂ figures are estimates only.
+    </p>
+
+    <div class="co2-tile__controls">
       <button
-        v-for="(eq, i) in equivalents"
-        :key="eq.id"
-        class="co2-tile__dot"
-        :class="{ 'co2-tile__dot--active': i === activeIndex }"
-        role="tab"
-        :aria-selected="i === activeIndex"
-        :aria-label="eq.label"
-        @click="goTo(i)"
-      />
+        type="button"
+        class="co2-tile__dot co2-tile__dot--pause"
+        :aria-label="isPaused ? 'Resume comparisons' : 'Pause comparisons'"
+        :aria-pressed="isPaused"
+        @click="togglePause"
+      >
+        <TablerIcon :name="isPaused ? 'player-play' : 'player-pause'" :size="20" />
+      </button>
+      <div class="co2-tile__dots" role="tablist" aria-label="CO₂ equivalents">
+        <button
+          v-for="(eq, i) in equivalents"
+          :key="eq.id"
+          class="co2-tile__dot"
+          :class="{ 'co2-tile__dot--active': i === activeIndex }"
+          role="tab"
+          :aria-selected="i === activeIndex"
+          :aria-label="eq.label"
+          @click="goTo(i)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -92,15 +126,25 @@ onBeforeUnmount(() => clearInterval(intervalId))
   padding: $space-4;
   color: $white;
   flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 
   &--compact {
     padding: $space-3;
+
+    @media (max-width: $bp-tablet) {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: $space-2 $space-3;
+    }
 
     .co2-tile__icon-wrap {
       width: 32px;
       height: 32px;
 
-      .ti { font-size: 1rem; }
+      .tabler-icon { width: 16px; height: 16px; }
     }
 
     .co2-tile__headline {
@@ -109,6 +153,41 @@ onBeforeUnmount(() => clearInterval(intervalId))
 
     .co2-tile__equiv {
       min-height: 52px;
+
+      @media (max-width: $bp-tablet) {
+        min-height: 0;
+        padding: $space-2;
+      }
+    }
+
+    .co2-tile__equiv-desc {
+      @media (max-width: $bp-tablet) {
+        display: none;
+      }
+    }
+
+    .co2-tile__controls {
+      @media (max-width: $bp-tablet) {
+        margin-top: $space-2;
+      }
+    }
+
+    .co2-tile__estimate-note {
+      @media (max-width: $bp-tablet) {
+        display: none;
+      }
+    }
+
+    .co2-tile__note {
+      @media (max-width: $bp-tablet) {
+        display: none;
+      }
+    }
+
+    .co2-tile__main {
+      @media (max-width: $bp-tablet) {
+        gap: $space-2;
+      }
     }
   }
 
@@ -135,7 +214,7 @@ onBeforeUnmount(() => clearInterval(intervalId))
     color: $green-300;
     flex-shrink: 0;
 
-    .ti { font-size: 1.25rem; }
+    .tabler-icon { width: 20px; height: 20px; }
   }
 
   &__headline-wrap {
@@ -161,10 +240,28 @@ onBeforeUnmount(() => clearInterval(intervalId))
     margin-top: 2px;
   }
 
+  &__equiv-heading {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba($white, 0.55);
+  }
+
+  &__estimate-note {
+    margin: $space-2 0 0;
+    font-size: 0.625rem;
+    line-height: 1.4;
+    color: rgba($white, 0.5);
+    text-align: center;
+  }
+
   &__equiv {
     min-height: 60px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: $space-2;
     padding: $space-3;
     background: rgba($green-300, 0.08);
     border: 1px solid rgba($green-300, 0.15);
@@ -189,7 +286,7 @@ onBeforeUnmount(() => clearInterval(intervalId))
     color: $green-300;
     flex-shrink: 0;
 
-    .ti { font-size: 1rem; }
+    .tabler-icon { width: 16px; height: 16px; }
   }
 
   &__equiv-text {
@@ -212,8 +309,8 @@ onBeforeUnmount(() => clearInterval(intervalId))
 
   &__equiv-desc {
     font-size: 0.6875rem;
-    color: rgba($white, 0.5);
-    line-height: 1.35;
+    color: rgba($white, 0.72);
+    line-height: 1.45;
   }
 
   &__note {
@@ -225,35 +322,69 @@ onBeforeUnmount(() => clearInterval(intervalId))
     line-height: 1.45;
     color: rgba($white, 0.72);
 
-    .ti {
+    .tabler-icon {
       flex-shrink: 0;
       margin-top: 1px;
-      font-size: 0.8125rem;
       color: $green-300;
     }
   }
 
-  &__dots {
+  &__controls {
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: $space-2;
     margin-top: $space-3;
   }
 
+  &__dots {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
   &__dot {
+    position: relative;
     width: 6px;
     height: 6px;
     border-radius: $radius-pill;
     background: rgba($white, 0.25);
-    transition: background $transition-fast, transform $transition-fast;
+    transition: background $transition-fast, transform $transition-fast, color $transition-fast;
     padding: 0;
+    flex-shrink: 0;
 
     &--active {
       background: $green-300;
       transform: scale(1.35);
     }
 
-    &:hover:not(&--active) {
+    &--pause {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba($white, 0.45);
+      background: transparent;
+      margin-right: $space-4;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+      }
+
+      .tabler-icon {
+        position: absolute;
+      }
+
+      &:hover {
+        color: rgba($white, 0.85);
+      }
+
+      &[aria-pressed='true'] {
+        color: $green-300;
+      }
+    }
+
+    &:hover:not(&--active):not(&--pause) {
       background: rgba($white, 0.5);
     }
   }

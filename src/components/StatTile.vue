@@ -1,18 +1,24 @@
-<script setup>
-defineProps({
-  icon:    { type: String, required: true },
-  label:   { type: String, required: true },
-  value:   { type: [String, Number], required: true },
-  unit:    { type: String, default: '' },
-  accent:  { type: Boolean, default: false },
-  compact: { type: Boolean, default: false },
+<script setup lang="ts">
+import TablerIcon from '@/components/TablerIcon.vue'
+
+withDefaults(defineProps<{
+  icon: string
+  label: string
+  value: string | number
+  unit?: string
+  accent?: boolean
+  compact?: boolean
+}>(), {
+  unit: '',
+  accent: false,
+  compact: false,
 })
 </script>
 
 <template>
   <div class="stat-tile" :class="{ 'stat-tile--accent': accent, 'stat-tile--compact': compact }">
     <div class="stat-tile__icon">
-      <i :class="['ti', icon]" aria-hidden="true" />
+      <TablerIcon :name="icon" :size="compact ? 16 : 20" />
     </div>
     <div class="stat-tile__body">
       <span class="stat-tile__value">
@@ -29,33 +35,58 @@ defineProps({
   align-items: center;
   gap: $space-4;
   padding: $space-4 $space-5;
-  background: $white;
-  border: $border-control solid $green-100;
+  background: var(--surface-card);
+  border: $border-control solid var(--border-subtle);
   border-radius: $radius-lg;
   transition: border-color $transition-fast;
+  min-width: 0;
+  max-width: 100%;
 
   &--compact {
     padding: $space-2 $space-3;
     gap: $space-2;
 
+    @media (max-width: $bp-tablet) {
+      padding: $space-2;
+      gap: $space-1;
+    }
+
     .stat-tile__icon {
       width: 32px;
       height: 32px;
 
-      .ti { font-size: 1rem; }
+      @media (max-width: $bp-tablet) {
+        width: 28px;
+        height: 28px;
+      }
     }
 
     .stat-tile__value {
       font-size: 1.0625rem;
+
+      @media (max-width: $bp-tablet) {
+        font-size: 0.9375rem;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+        line-height: 1.25;
+      }
     }
 
     .stat-tile__label {
       font-size: 0.75rem;
+
+      @media (max-width: $bp-tablet) {
+        font-size: 0.6875rem;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+      }
     }
   }
 
   &--accent {
-    background: $green-50;
+    background: var(--surface-accent);
     border-color: $green-300;
   }
 
@@ -69,8 +100,6 @@ defineProps({
     background: $green-100;
     color: $green-700;
     flex-shrink: 0;
-
-    .ti { font-size: 1.25rem; }
 
     .stat-tile--accent & {
       background: $green-300;
@@ -88,7 +117,7 @@ defineProps({
   &__value {
     font-size: 1.375rem;
     font-weight: 600;
-    color: $gray-900;
+    color: var(--text-primary);
     line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
@@ -98,13 +127,13 @@ defineProps({
   &__unit {
     font-size: 0.875rem;
     font-weight: 400;
-    color: $gray-600;
+    color: var(--text-secondary);
     margin-left: $space-1;
   }
 
   &__label {
     font-size: $text-sm;
-    color: $gray-600;
+    color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -1,6 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { usePdfExport } from '@/composables/usePdfExport.js'
+import { usePdfExport } from '@/composables/usePdfExport.ts'
+import TablerIcon from '@/components/TablerIcon.vue'
 
 const { downloadPdf } = usePdfExport()
 const exporting = ref(false)
@@ -20,7 +21,7 @@ async function handleDownload() {
   <div class="export-card">
     <div class="export-card__info">
       <div class="export-card__icon" aria-hidden="true">
-        <i class="ti ti-file-download" />
+        <TablerIcon name="file-download" :size="16" />
       </div>
       <p class="export-card__text">
         Save a PDF summary of your trip with map and emissions data.
@@ -32,10 +33,11 @@ async function handleDownload() {
       type="button"
       :disabled="exporting"
       :aria-busy="exporting"
+      :aria-label="exporting ? 'Generating PDF summary' : 'Save results as PDF'"
       @click="handleDownload"
     >
-      <i class="ti ti-download" aria-hidden="true" />
-      {{ exporting ? 'Generating…' : 'Download PDF' }}
+      <TablerIcon name="download" :size="16" />
+      {{ exporting ? 'Generating…' : 'Save results as PDF' }}
     </button>
   </div>
 </template>
@@ -48,8 +50,8 @@ async function handleDownload() {
   gap: $space-3;
   width: 100%;
   padding: $space-2 $space-3;
-  background: $white;
-  border: $border-control solid $green-100;
+  background: var(--surface-raised);
+  border: $border-control solid var(--border-subtle);
   border-radius: $radius-lg;
   flex-shrink: 0;
 
@@ -72,14 +74,14 @@ async function handleDownload() {
     color: $green-700;
     flex-shrink: 0;
 
-    .ti { font-size: 1rem; }
+    .tabler-icon { flex-shrink: 0; }
   }
 
   &__text {
     margin: 0;
     font-size: $text-sm;
     line-height: 1.45;
-    color: $gray-600;
+    color: var(--text-secondary);
   }
 
   &__btn {
@@ -101,7 +103,7 @@ async function handleDownload() {
       transform    $transition-fast;
     box-shadow: 0 2px 8px rgba($green-700, 0.3);
 
-    .ti { font-size: 1rem; }
+    .tabler-icon { flex-shrink: 0; }
 
     &:hover:not(:disabled) {
       background: $green-500;
@@ -117,12 +119,19 @@ async function handleDownload() {
     }
   }
 
-  @media (max-width: $bp-mobile) {
+  @media (max-width: $bp-tablet) {
     flex-direction: column;
     align-items: stretch;
+    gap: $space-2;
+    padding: $space-2;
+
+    &__info {
+      display: none;
+    }
 
     &__btn {
       width: 100%;
+      padding: $space-2 $space-4;
     }
   }
 }

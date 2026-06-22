@@ -1,9 +1,8 @@
-<script setup>
-import { storeToRefs } from 'pinia'
-import { useUiStore } from '@/stores/uiStore.js'
+<script setup lang="ts">
+import { useTheme } from '@/composables/useTheme.ts'
+import TablerIcon from '@/components/TablerIcon.vue'
 
-const uiStore = useUiStore()
-const { darkMode } = storeToRefs(uiStore)
+const { darkMode, toggleDarkMode } = useTheme()
 </script>
 
 <template>
@@ -12,9 +11,9 @@ const { darkMode } = storeToRefs(uiStore)
     type="button"
     :aria-label="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
     :aria-pressed="darkMode"
-    @click="uiStore.toggleDarkMode()"
+    @click="toggleDarkMode"
   >
-    <i :class="['ti', darkMode ? 'ti-sun' : 'ti-moon']" aria-hidden="true" />
+    <TablerIcon :name="darkMode ? 'sun' : 'moon'" :size="18" />
   </button>
 </template>
 
@@ -29,10 +28,6 @@ const { darkMode } = storeToRefs(uiStore)
   background: rgba($white, 0.15);
   color: rgba($white, 0.85);
   transition: background $transition-fast, color $transition-fast, transform $transition-fast;
-
-  .ti {
-    font-size: 1.125rem;
-  }
 
   &:hover {
     background: rgba($white, 0.22);

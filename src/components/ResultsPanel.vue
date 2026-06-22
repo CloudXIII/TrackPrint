@@ -1,74 +1,44 @@
-<script setup>
-import { computed } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useTripStore } from '@/stores/tripStore.js'
-import { useUiStore }   from '@/stores/uiStore.js'
-import { useUnits }     from '@/composables/useUnits.js'
+<script setup lang="ts">
+import { useTripStats } from '@/composables/useTripStats.ts'
 import StatTile from '@/components/StatTile.vue'
-import Co2Tile  from '@/components/Co2Tile.vue'
+import Co2Tile from '@/components/Co2Tile.vue'
 import ExportCard from '@/components/ExportCard.vue'
+import TablerIcon from '@/components/TablerIcon.vue'
 
-const tripStore = useTripStore()
-const { market } = storeToRefs(useUiStore())
 const {
-  distanceKm, durationMin, energyUsed, energyUsedLitres, energyUsedKwh,
-  isSplitEnergy, cost, co2Kg, equivalents, fuel,
-} = storeToRefs(tripStore)
-const { formatDistance, formatCost, formatFuelUsed, formatEnergySplit, formatDuration } = useUnits()
-
-const distanceFmt = computed(() => formatDistance(distanceKm.value))
-const durationFmt = computed(() =>
-  durationMin.value !== null ? formatDuration(durationMin.value) : { value: '—', label: '' },
-)
-const costFmt = computed(() => formatCost(cost.value))
-
-const energyFmt = computed(() => {
-  if (isSplitEnergy.value) {
-    return formatEnergySplit(energyUsedLitres.value, energyUsedKwh.value)
-  }
-  return formatFuelUsed(energyUsed.value, fuel.value) ?? { value: '—', label: '' }
-})
-
-const energyLabel = computed(() =>
-  isSplitEnergy.value ? 'Energy used' : 'Fuel used',
-)
-
-const energyIcon = computed(() =>
-  isSplitEnergy.value ? 'ti-bolt' : 'ti-droplet',
-)
-
-const costIcon = computed(() =>
-  market.value === 'uk' ? 'ti-currency-pound' : 'ti-currency-euro',
-)
-
-const showGridCo2Note = computed(() =>
-  fuel.value?.id === 'electric' ||
-  (fuel.value?.id === 'plugin' && (energyUsedKwh.value ?? 0) > 0),
-)
-
-const showExport = computed(() => (distanceKm.value ?? 0) > 0)
+  co2Kg,
+  equivalents,
+  distanceFmt,
+  durationFmt,
+  costFmt,
+  energyFmt,
+  energyLabel,
+  energyIcon,
+  costIcon,
+  showGridCo2Note,
+  showExport,
+} = useTripStats()
 </script>
 
 <template>
-  <Transition name="slide-up">
-    <div class="results-panel-shell">
+  <div class="results-panel-shell">
       <section class="results-panel" aria-label="Trip results">
-        <div class="results-panel__scroll">
+        <div class="results-panel__body">
           <h3 class="results-panel__title">
-            <i class="ti ti-chart-bar" aria-hidden="true" />
+            <TablerIcon name="chart-bar" :size="18" />
             Results
           </h3>
 
           <div class="results-panel__grid">
             <StatTile
-              icon="ti-route"
+              icon="route"
               label="Distance"
               :value="distanceFmt.value"
               :unit="distanceFmt.label"
               compact
             />
             <StatTile
-              icon="ti-clock"
+              icon="clock"
               label="Drive time"
               :value="durationFmt.value"
               :unit="durationFmt.label"
@@ -93,52 +63,61 @@ const showExport = computed(() => (distanceKm.value ?? 0) > 0)
 
           <div class="results-panel__section">
             <h4 class="results-panel__section-title">
-              <i class="ti ti-leaf" aria-hidden="true" />
+              <TablerIcon name="leaf" :size="16" />
               Environmental impact
             </h4>
             <Co2Tile
-              :co2-kg="co2Kg"
+              :co2-kg="co2Kg ?? 0"
               :equivalents="equivalents"
               :show-grid-note="showGridCo2Note"
               compact
             />
           </div>
-
-          <ExportCard v-if="showExport" class="results-panel__export" />
         </div>
+
+        <ExportCard v-if="showExport" class="results-panel__export" />
       </section>
     </div>
-  </Transition>
 </template>
 
 <style lang="scss" scoped>
 .results-panel-shell {
   flex: 1;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   height: 100%;
   border-radius: $radius-xl;
   box-shadow: $shadow-panel;
+  background: var(--surface-card);
 }
 
 .results-panel {
   height: 100%;
-  background: $white;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  background: var(--surface-card);
   border-radius: $radius-xl;
   display: flex;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
 
-  &__scroll {
+  &__body {
     flex: 1;
     min-height: 0;
     padding: $space-4;
     display: flex;
     flex-direction: column;
     gap: $space-3;
-    overflow-x: hidden;
-    overflow-y: auto;
-    justify-content: flex-start;
+    overflow: hidden;
+
+    @media (max-width: $bp-tablet) {
+      padding: $space-3;
+      gap: $space-2;
+    }
   }
 
   &__title {
@@ -147,20 +126,26 @@ const showExport = computed(() => (distanceKm.value ?? 0) > 0)
     gap: $space-2;
     font-size: $text-md;
     font-weight: 600;
-    color: $gray-900;
+    color: var(--text-primary);
     flex-shrink: 0;
 
-    .ti { color: $green-500; }
+    @media (max-width: $bp-tablet) {
+      font-size: $text-sm;
+    }
+
+    .tabler-icon { color: $green-500; }
   }
 
   &__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: $space-2;
     flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
 
-    @media (max-width: $bp-mobile) {
-      grid-template-columns: 1fr;
+    @media (max-width: $bp-tablet) {
+      gap: $space-1;
     }
   }
 
@@ -168,13 +153,32 @@ const showExport = computed(() => (distanceKm.value ?? 0) > 0)
     display: flex;
     flex-direction: column;
     gap: $space-2;
-    flex-shrink: 0;
+    flex: 1;
+    min-height: 0;
     padding-top: $space-1;
-    border-top: $border-control solid $green-100;
+    border-top: $border-control solid var(--border-subtle);
+    overflow: hidden;
+
+    @media (max-width: $bp-tablet) {
+      gap: $space-2;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    :deep(.co2-tile) {
+      flex: 1;
+      min-height: 0;
+    }
   }
 
   &__export {
-    margin-top: auto;
+    flex-shrink: 0;
+    padding: 0 $space-4 $space-4;
+
+    @media (max-width: $bp-tablet) {
+      padding: $space-2 $space-3 $space-3;
+      border-top: $border-control solid var(--border-subtle);
+    }
   }
 
   &__section-title {
@@ -185,16 +189,12 @@ const showExport = computed(() => (distanceKm.value ?? 0) > 0)
     font-weight: 600;
     letter-spacing: 0.02em;
     text-transform: uppercase;
-    color: $gray-600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
 
-    .ti {
-      font-size: $text-base;
+    .tabler-icon {
       color: $green-500;
     }
   }
-}
-
-.slide-up-enter-active {
-  transition-delay: 350ms;
 }
 </style>

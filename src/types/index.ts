@@ -163,6 +163,14 @@ export interface CalculateTripParams {
   batteryRangeKm?: number
 }
 
+/** Trip form inputs persisted when a calculation runs. */
+export interface TripDraft {
+  from: GeoLocation | null
+  to: GeoLocation | null
+  vehicle: VehicleProfile | null
+  fuel: FuelType | null
+}
+
 export interface TripResults {
   distanceKm: number
   durationMin: number

@@ -1,8 +1,12 @@
 # TrackPrint
 
-Portfolio demo app — trip fuel-cost and CO₂ calculator with interactive routing, vehicle profiles, and PDF export.
+**Trip fuel-cost and CO₂ calculator with live routing.**
 
-**Live demo:** [track-print-zeta.vercel.app](https://track-print-zeta.vercel.app/)
+Enter an origin and destination, get the real road distance, estimated fuel spend, and carbon footprint — exportable as a PDF report.
+
+🔗 **[Live demo](https://track-print-zeta.vercel.app)**
+
+---
 
 ## Screenshots
 
@@ -14,54 +18,66 @@ Portfolio demo app — trip fuel-cost and CO₂ calculator with interactive rout
 
 ![TrackPrint results after route calculation](docs/screenshot-results.png)
 
-## Features
+## What it does
 
-- Route planning with map visualization (Leaflet + OpenStreetMap or Google Maps)
-- Fuel consumption and cost estimates by vehicle type and fuel
-- CO₂ emissions with rotating real-world equivalents
-- OSRM / Nominatim by default; optional Google Maps providers via env vars
-- UK / EU market toggle (currency and units)
+- Calculates fuel cost and CO₂ emissions for a road trip based on vehicle consumption and fuel price
+- Draws the real driving route on an interactive map (Leaflet + OpenStreetMap, or Google Maps)
+- Supports metric and imperial units with a UK / EU market toggle (currency and units)
+- Exports a trip summary as a PDF
+- Fully responsive — including a draggable bottom-sheet map panel on mobile
 - Dark mode
-- Export trip summary as PDF
 
-## Stack
+## Tech stack
 
-| Layer | Technology |
+| Layer | Choice |
 | --- | --- |
-| UI | Vue 3.5 (Composition API, `<script setup lang="ts">`), SCSS |
-| Build | Vite 8, TypeScript 5, `vue-tsc` |
-| State | Pinia 3 |
-| Maps | Leaflet, Google Maps JavaScript API |
-| Routing / geocoding | OSRM, Nominatim, Google Routes & Places |
-| PDF | jsPDF, html2canvas |
+| Framework | Vue 3 + `<script setup>` + TypeScript |
+| Build | Vite, `vue-tsc` |
+| State | Pinia |
+| Maps | Leaflet + `@vue-leaflet/vue-leaflet`, Google Maps JavaScript API |
+| Routing API | OSRM (via adapter layer); optional Google Routes |
+| Geocoding API | Nominatim (via adapter layer); optional Google Places |
+| Styling | SCSS |
+| Icons | Tabler Icons |
+| PDF export | jsPDF + html2canvas |
+| Tests | Vitest |
+| Deploy | Vercel |
 
 The codebase is fully TypeScript — components, composables, stores, services, and adapters.
 
-## Development approach
+## Architecture
 
-This project was built using **Cursor** (AI-powered IDE) as the primary development tool, going through multiple iterations of feature development and progressive refinement.
+- **Adapter pattern** — routing and geocoding providers are abstracted behind interfaces in `src/adapters/` and wired in `src/config/providers.ts`, so backends can be swapped without touching UI or business logic
+- **Feature-based folders** — components and composables grouped by domain (`trip`, `map`, `layout`, `results`, `ui`)
+- **Pure service layer** — fuel, emissions, and unit conversions live in `src/services/` with no Vue dependencies
+- **Map driver abstraction** — Leaflet and Google Maps share a common host/shell so the results panel stays provider-agnostic
+- **Tested calculations** — Vitest covers the service layer (fuel, emissions, unit conversions)
 
-After the initial build, the codebase was manually refactored to enforce SOLID principles, improve separation of concerns (service layer, adapter pattern for external providers), and remove AI-generated boilerplate — with the goal of making the code maintainable and easy to extend by a human developer.
-
-This reflects how I approach AI-assisted development: using AI to accelerate, then applying architectural judgment to make the result production-ready.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add vehicles, fuels, or providers.
 
 ## Getting started
 
-Try the [live demo](https://track-print-zeta.vercel.app/) — no install required. To run locally:
+Try the [live demo](https://track-print-zeta.vercel.app) — no install required.
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) 18+
-
-### Install
+**Prerequisites:** [Node.js](https://nodejs.org/) 18+
 
 ```bash
 git clone https://github.com/CloudXIII/TrackPrint.git
 cd TrackPrint
 npm install
+npm run dev
 ```
 
-### Configure environment
+No API keys required for the default stack (OSRM + Nominatim + OpenStreetMap tiles).
+
+```bash
+npm run typecheck   # TypeScript check
+npm run test        # unit tests (Vitest — service layer)
+npm run build       # production build (type-checks first)
+npm run preview     # preview production build
+```
+
+## Configuration (optional)
 
 Copy the example env file **into `.env`** (Vite does not read `.env.example`):
 
@@ -105,51 +121,46 @@ Nominatim geocoding is proxied via `/api/nominatim` — Vite in dev (`vite.confi
 
 When routing uses Google, the on-screen map uses **Google Maps** (Platform ToS). With OSRM, the map uses Leaflet + OpenStreetMap tiles.
 
-### Run locally
-
-```bash
-npm run dev
-```
-
-Production build (type-checks first):
-
-```bash
-npm run typecheck   # optional — also runs as part of build
-npm run test        # unit tests (Vitest — service layer)
-npm run build
-npm run preview
-```
-
 ## Project structure
 
 ```
 api/
-└── nominatim/         # Vercel serverless proxy — User-Agent from package.json (plain JS)
-
-docs/
-├── screenshot-form.png     # README: trip form (pre-calculation)
-└── screenshot-results.png  # README: results panel + map (post-calculation)
+└── nominatim/              # Vercel serverless proxy — User-Agent from package.json
 
 src/
-├── adapters/          # Geocoding & routing adapters (DIP — swappable providers)
-├── appMeta.ts         # App name, version, Nominatim User-Agent
-├── assets/styles/     # Global SCSS tokens and themes
-├── components/        # Vue UI components
-├── composables/       # Shared Vue logic (theme, units, route calculation, PDF, …)
-├── config/            # Vehicles, fuels, units, map styles, default map views
-├── constants/         # App-wide constants (storage keys, conversion factors, …)
+├── adapters/               # Provider-agnostic geocoding & routing interfaces
+│   ├── geocoding/
+│   └── routing/
+├── app/                    # App.vue, main.ts
+├── assets/styles/          # Global SCSS tokens, themes, layout
+├── components/
+│   ├── layout/             # AppHeader, MobileBottomSheet
+│   ├── map/                # RouteMap, Leaflet/Google drivers, shell
+│   ├── results/            # ResultsPanel, StatTile, Co2Tile, ExportCard
+│   ├── trip/               # TripForm, LocationField, FuelPills, sliders
+│   └── ui/                 # ThemeToggle, MarketToggle, TablerIcon
+├── composables/
+│   ├── layout/             # Panel layout, mobile sheet, form collapse
+│   ├── map/                # Route map host, map drivers, sheet context
+│   └── trip/               # Trip state, route calculation, vehicle config
+├── config/                 # Vehicles, fuels, units, providers, map views
+├── constants/              # App-wide constants (layout, map, animation)
 ├── services/
-│   ├── calculations/  # Pure fuel & CO₂ math
-│   ├── googleMaps/    # Google REST client and JS API loader
-│   ├── pdf/           # PDF map rendering helpers
-│   └── units/         # km/mi, L/100km/MPG conversions
-├── stores/            # Pinia stores (trip + UI preferences)
-├── types/             # Shared TypeScript interfaces
-└── utils/             # Helpers (polyline, PDF template, location labels, icons)
+│   ├── calculations/       # Pure fuel & CO₂ math (+ Vitest)
+│   ├── googleMaps/         # Google REST client and JS API loader
+│   ├── pdf/                # PDF map rendering helpers
+│   └── units/              # km/mi, L/100km/MPG conversions (+ Vitest)
+├── stores/                 # Pinia stores (trip + UI preferences)
+├── types/                  # Shared TypeScript interfaces
+└── utils/                  # Polyline decode, PDF template, location labels
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add vehicles, fuels, or providers.
+## Notes
+
+- CO₂ figures are estimates based on declared fuel consumption. Treat them as indicative, not precise.
+- Nominatim has a [usage policy](https://operations.osmfoundation.org/policies/nominatim/) that limits request rate. This app is a demo and stays within those limits.
+- Map tiles and routing data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
 
 ## License
 
-[MIT](./LICENSE) — free to use, modify, and share. CO₂ figures and cost estimates are indicative only.
+[MIT](./LICENSE) — free to use, modify, and share.

@@ -1,0 +1,131 @@
+@use 'tokens' as *;
+
+// Base route map shell — shared by Google and Leaflet providers.
+.route-map-shell {
+  height: 100%;
+  min-height: 0;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-panel;
+
+  @media (min-width: $bp-tablet) {
+    min-height: $map-panel-min-height;
+  }
+}
+
+.route-map {
+  position: relative;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  background: $gray-100;
+  height: 100%;
+  min-height: 0;
+
+  @media (min-width: $bp-tablet) {
+    min-height: $map-panel-min-height;
+  }
+
+  &__map {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__hint,
+  &__error {
+    position: absolute;
+    bottom: $space-4;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-2 $space-3;
+    border-radius: $radius-pill;
+    box-shadow: $shadow-sm;
+    z-index: 10;
+    max-width: calc(100% - #{$space-6});
+    text-align: center;
+  }
+
+  &__hint {
+    background: rgba($white, 0.92);
+    pointer-events: none;
+    white-space: nowrap;
+
+    .tabler-icon {
+      font-size: 1rem;
+      color: $green-500;
+    }
+
+    span {
+      font-size: $text-sm;
+      color: $gray-600;
+    }
+  }
+
+  &__error {
+    background: rgba($white, 0.96);
+    color: $gray-600;
+    font-size: $text-sm;
+
+    .tabler-icon {
+      flex-shrink: 0;
+      color: $green-700;
+    }
+  }
+}
+
+// Leaflet panes render outside scoped boundaries — target via shell wrapper.
+.route-map-shell .leaflet-pane   { z-index: 1; }
+.route-map-shell .leaflet-top,
+.route-map-shell .leaflet-bottom { z-index: 2; }
+
+@mixin map-provider-controls-hidden {
+  .leaflet-control-zoom,
+  .leaflet-control-attribution,
+  .gm-style-cc,
+  .gm-bundled-control,
+  gmp-internal-camera-control {
+    display: none !important;
+  }
+}
+
+// Route map layout modifiers — applied via inject from MobileBottomSheet.
+.route-map-shell--in-sheet {
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  box-shadow: none;
+
+  .route-map {
+    height: 100%;
+    min-height: 0;
+    border-radius: 0;
+    transition: filter 220ms ease, transform 220ms ease;
+    will-change: filter, transform;
+  }
+}
+
+.route-map-shell--sheet-overlay {
+  @include map-provider-controls-hidden;
+
+  .route-map {
+    filter: blur(6px);
+    transform: scale(1.015);
+  }
+
+  .route-map__hint {
+    display: none;
+  }
+}
+
+// Collapsed sheet: block gestures at the CSS layer (shield + API calls are also required).
+.route-map-shell--interaction-locked {
+  @include map-provider-controls-hidden;
+
+  pointer-events: none;
+
+  .route-map,
+  .route-map * {
+    pointer-events: none !important;
+  }
+}

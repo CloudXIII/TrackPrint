@@ -113,9 +113,9 @@ For Google:
 2. Enable billing, then enable **Routes API**, **Places API (New)**, **Maps JavaScript API**, and **Maps Static API** — not the legacy Directions / Geocoding APIs.
 3. Create an API key restricted to your domain and `http://localhost:5173/*` for local dev.
 
-Google REST calls are proxied via `/api/google-routes` and `/api/google-places` (see `vite.config.js` and `vercel.json` rewrites).
+Google REST calls are proxied via `/api/google-routes` and `/api/google-places` (see `vite.config.ts` and `vercel.json` rewrites).
 
-Nominatim geocoding is proxied via `/api/nominatim` — Vite in dev (`vite.config.js`) and a serverless function in production (`api/nominatim/`). Browsers cannot set the `User-Agent` header that Nominatim requires; the proxy adds `TrackPrint/<version>` from `package.json`. Keep `api/nominatim/` as plain JavaScript (do not import from `src/` — Vercel cannot run those modules).
+Nominatim geocoding is proxied via `/api/nominatim` — Vite in dev (`vite.config.ts`) and a serverless function in production (`api/nominatim/`). Browsers cannot set the `User-Agent` header that Nominatim requires; the proxy adds `TrackPrint/<version>` from `package.json`. Keep `api/nominatim/` as plain JavaScript (do not import from `src/` — Vercel cannot run those modules).
 
 When routing uses Google, the on-screen map uses **Google Maps** (Platform ToS). With OSRM, the map uses Leaflet + OpenStreetMap tiles.
 

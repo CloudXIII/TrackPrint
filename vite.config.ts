@@ -1,33 +1,34 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite'
+import { defineConfig, type ProxyOptions } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import type { ClientRequest } from 'node:http'
 import { NOMINATIM_USER_AGENT } from './src/appMeta.ts'
 
-const googleRoutesProxy = {
+const googleRoutesProxy: ProxyOptions = {
   target: 'https://routes.googleapis.com',
   changeOrigin: true,
   rewrite: (path) => path.replace(/^\/api\/google-routes/, ''),
 }
 
-const googlePlacesProxy = {
+const googlePlacesProxy: ProxyOptions = {
   target: 'https://places.googleapis.com',
   changeOrigin: true,
   rewrite: (path) => path.replace(/^\/api\/google-places/, ''),
 }
 
-const googleStaticProxy = {
+const googleStaticProxy: ProxyOptions = {
   target: 'https://maps.googleapis.com',
   changeOrigin: true,
   rewrite: (path) => path.replace(/^\/api\/google-static/, '/maps/api/staticmap'),
 }
 
-const nominatimProxy = {
+const nominatimProxy: ProxyOptions = {
   target: 'https://nominatim.openstreetmap.org',
   changeOrigin: true,
   rewrite: (path) => path.replace(/^\/api\/nominatim/, ''),
   configure: (proxy) => {
-    proxy.on('proxyReq', (proxyReq) => {
+    proxy.on('proxyReq', (proxyReq: ClientRequest) => {
       proxyReq.setHeader('User-Agent', NOMINATIM_USER_AGENT)
     })
   },

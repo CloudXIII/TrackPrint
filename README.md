@@ -53,8 +53,6 @@ The codebase is fully TypeScript — components, composables, stores, services, 
 - **Map driver abstraction** — Leaflet and Google Maps share a common host/shell so the results panel stays provider-agnostic
 - **Tested calculations** — Vitest covers the service layer (fuel, emissions, unit conversions)
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add vehicles, fuels, or providers.
-
 ## Getting started
 
 Try the [live demo](https://track-print-zeta.vercel.app) — no install required.

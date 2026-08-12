@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Analytics } from '@vercel/analytics/vue'
 import AppHeader         from '@/components/layout/AppHeader.vue'
 import TripForm          from '@/components/trip/TripForm.vue'
 import RouteMap          from '@/components/map/RouteMap.vue'
@@ -41,6 +42,7 @@ const {
 </script>
 
 <template>
+  <Analytics />
   <div class="app">
     <AppHeader />
 

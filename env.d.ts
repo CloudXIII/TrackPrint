@@ -5,6 +5,8 @@ interface ImportMetaEnv {
   readonly VITE_ROUTING_PROVIDER?: string
   readonly VITE_GEOCODING_PROVIDER?: string
   readonly VITE_GOOGLE_MAPS_KEY?: string
+  /** CARTO Basemaps API key — required for Leaflet/OSRM tile URLs */
+  readonly VITE_CARTO_BASEMAPS_KEY?: string
 }
 
 interface ImportMeta {

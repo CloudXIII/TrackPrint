@@ -4,7 +4,7 @@
 
 Enter an origin and destination, get the real road distance, estimated fuel spend, and carbon footprint — exportable as a PDF report.
 
-🔗 **[Live demo](https://track-print-zeta.vercel.app)**
+🔗 **[Live demo](https://track-print-zeta.vercel.app)** *(hosted example — any static host works)*
 
 ---
 
@@ -34,14 +34,14 @@ Enter an origin and destination, get the real road distance, estimated fuel spen
 | Framework | Vue 3 + `<script setup>` + TypeScript |
 | Build | Vite, `vue-tsc` |
 | State | Pinia |
-| Maps | Leaflet + `@vue-leaflet/vue-leaflet`, Google Maps JavaScript API |
+| Maps | Leaflet + `@vue-leaflet/vue-leaflet` (CARTO basemap tiles), Google Maps JavaScript API |
 | Routing API | OSRM (via adapter layer); optional Google Routes |
 | Geocoding API | Nominatim (via adapter layer); optional Google Places |
 | Styling | SCSS |
 | Icons | Tabler Icons |
 | PDF export | jsPDF + html2canvas |
 | Tests | Vitest |
-| Deploy | Vercel |
+| Deploy | Static SPA (`npm run build`); optional serverless proxies under `api/` |
 
 The codebase is fully TypeScript — components, composables, stores, services, and adapters.
 
@@ -55,7 +55,7 @@ The codebase is fully TypeScript — components, composables, stores, services, 
 
 ## Getting started
 
-Try the [live demo](https://track-print-zeta.vercel.app) — no install required.
+Try the [live demo](https://track-print-zeta.vercel.app) (hosted example) — no install required.
 
 **Prerequisites:** [Node.js](https://nodejs.org/) 18+
 
@@ -66,7 +66,7 @@ npm install
 npm run dev
 ```
 
-No API keys required for the default stack (OSRM + Nominatim + OpenStreetMap tiles).
+The default stack (OSRM + Nominatim + Leaflet) needs a free **CARTO Basemaps** API key for map tiles. Routing and geocoding stay key-free.
 
 ```bash
 npm run typecheck   # TypeScript check
@@ -75,7 +75,7 @@ npm run build       # production build (type-checks first)
 npm run preview     # preview production build
 ```
 
-## Configuration (optional)
+## Configuration
 
 Copy the example env file **into `.env`** (Vite does not read `.env.example`):
 
@@ -90,14 +90,26 @@ Edit `.env` with your provider choice and API keys. **Never commit `.env`** — 
 | `VITE_MAP_PROVIDER` | No | Optional unified override for **both** geocoding and routing. Valid values: `osrm` or `googleMaps`. Takes precedence over the two variables below. Do **not** use `nominatim` here — it is geocoding-only. |
 | `VITE_ROUTING_PROVIDER` | No | `osrm` (default) or `googleMaps` |
 | `VITE_GEOCODING_PROVIDER` | No | `nominatim` (default) or `googleMaps` |
+| `VITE_CARTO_BASEMAPS_KEY` | For Leaflet / OSRM map | CARTO Basemaps API key appended as `?key=` on tile URLs |
 | `VITE_GOOGLE_MAPS_KEY` | When using Google | Google Cloud API key for Routes, Places (New), Maps JS, and Static Maps |
 
-**OpenStreetMap stack (default — no API key)**
+**OpenStreetMap stack (default)**
 
 ```env
 VITE_ROUTING_PROVIDER=osrm
 VITE_GEOCODING_PROVIDER=nominatim
+VITE_CARTO_BASEMAPS_KEY=your_carto_key_here
 ```
+
+For CARTO basemap tiles:
+
+1. Request a free key at [carto.com/basemaps/apikey](https://carto.com/basemaps/apikey/) (no CARTO account required).
+2. Put it in `.env` as `VITE_CARTO_BASEMAPS_KEY`. For production, set the **same** name in your host’s environment variables and rebuild/redeploy (Vite inlines `VITE_*` at build time).
+3. In the [CARTO Basemaps dashboard](https://dashboard.basemaps.carto.com/), restrict the key by **Referer host** — host only (no `https://`, path, or port), e.g. `your-app.example.com`.
+4. Use a **separate** key for local dev (`localhost` / `127.0.0.1`): a restricted key cannot list both public sites and localhost.
+5. Optional: preview/ephemeral deploy hosts get a new hostname often — add a matching wildcard (e.g. `*.your-project.example.com`) or another key.
+
+Without a key, Leaflet tiles show an “API KEY REQUIRED” watermark (required since 25 September 2026). Free tier: up to 5M tile requests/month (non-commercial) or 1M (commercial). Keep OSM + CARTO attribution visible (already included). Like `VITE_GOOGLE_MAPS_KEY`, this value is embedded in the client bundle — restrict by referrer; do not treat it as a server secret.
 
 **Google Maps stack**
 
@@ -113,17 +125,19 @@ For Google:
 2. Enable billing, then enable **Routes API**, **Places API (New)**, **Maps JavaScript API**, and **Maps Static API** — not the legacy Directions / Geocoding APIs.
 3. Create an API key restricted to your domain and `http://localhost:5173/*` for local dev.
 
-Google REST calls are proxied via `/api/google-routes` and `/api/google-places` (see `vite.config.ts` and `vercel.json` rewrites).
+Google REST calls are proxied via `/api/google-routes` and `/api/google-places` (Vite proxy in `vite.config.ts`; production rewrites in `vercel.json` as a ready-made example for hosts that support them).
 
-Nominatim geocoding is proxied via `/api/nominatim` — Vite in dev (`vite.config.ts`) and a serverless function in production (`api/nominatim/`). Browsers cannot set the `User-Agent` header that Nominatim requires; the proxy adds `TrackPrint/<version>` from `package.json`. Keep `api/nominatim/` as plain JavaScript (do not import from `src/` — Vercel cannot run those modules).
+Nominatim geocoding is proxied via `/api/nominatim` — Vite in dev (`vite.config.ts`) and `api/nominatim/` in production. Browsers cannot set the `User-Agent` header that Nominatim requires; the proxy adds `TrackPrint/<version>` from `package.json`. Keep `api/` as plain JavaScript with no imports from `src/` (serverless runtimes typically cannot load the Vite app graph).
 
-When routing uses Google, the on-screen map uses **Google Maps** (Platform ToS). With OSRM, the map uses Leaflet + OpenStreetMap tiles.
+The SPA itself is host-agnostic (`npm run build` → static files). The `api/` folder and `vercel.json` are an optional production adapter for platforms with serverless functions / edge rewrites (the live demo uses one such host). Elsewhere, provide equivalent proxies for Nominatim (User-Agent) and, if you use Google, for the Routes/Places/Static paths.
+
+When routing uses Google, the on-screen map uses **Google Maps** (Platform ToS). With OSRM, the map uses Leaflet + CARTO basemap tiles (OSM data).
 
 ## Project structure
 
 ```
 api/
-└── nominatim/              # Vercel serverless proxy — User-Agent from package.json
+└── nominatim/              # Production Nominatim proxy (User-Agent) — optional hosting adapter
 
 src/
 ├── adapters/               # Provider-agnostic geocoding & routing interfaces

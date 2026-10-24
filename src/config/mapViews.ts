@@ -20,9 +20,20 @@ export const LEAFLET_MARKET_VIEWS: Record<MarketId, LeafletMapMarketView> = {
   eu: { center: [50.5, 9.5], zoom: 5 },
 }
 
+/** CARTO raster basemaps require `?key=` since Sep 2026 — see VITE_CARTO_BASEMAPS_KEY. */
+function withCartoBasemapKey(url: string): string {
+  const key = import.meta.env.VITE_CARTO_BASEMAPS_KEY?.trim()
+  if (!key) return url
+  return `${url}?key=${encodeURIComponent(key)}`
+}
+
 export const OSM_TILE_URLS = {
-  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  light: withCartoBasemapKey(
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  ),
+  dark: withCartoBasemapKey(
+    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  ),
 } as const
 
 export const OSM_TILE_ATTRIBUTION = {

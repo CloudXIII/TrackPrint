@@ -5,6 +5,7 @@ import { useUiStore } from '@/stores/uiStore.js'
 import { useUnits } from '@/composables/useUnits.js'
 import { getVehicleLabel } from '@/config/vehicles.js'
 import { BRAND_COLORS } from '@/config/brandColors.js'
+import { OSM_TILE_URLS } from '@/config/mapViews.ts'
 import {
   buildPdfTemplate,
   buildPdfFilename,
@@ -16,7 +17,7 @@ import {
 const CAPTURE_SCALE = 2
 const MAP_SLOT_WIDTH = TEMPLATE_WIDTH - 56 // template horizontal padding (28 * 2)
 const MAP_SLOT_HEIGHT = 250                // horizontal banner proportions
-const TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+const TILE_URL = OSM_TILE_URLS.light
 
 function toLatLng(point) {
   if (Array.isArray(point)) return { lat: point[0], lng: point[1] }
